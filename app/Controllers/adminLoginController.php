@@ -1,67 +1,88 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class AdminLoginController extends CI_Controller {
+namespace App\Controllers;
 
-    public function __construct() {
-        parent::__construct();
-        $this->load->library('form_validation');
-        $this->load->model('UserModel'); // Modèle pour gérer les interactions avec les utilisateurs
+use App\Models\UserModel;
+use App\Models\RoleModel;
+use App\Models\CompteModel;
+use CodeIgniter\Controller;
+
+class AdminLoginController extends Controller
+{
+    protected $session;
+
+    public function __construct()
+    {
+        // Load the session service
+        $this->session = \Config\Services::session();
     }
 
-    // Charger la page de connexion
-    public function index() {
-        if ($this->session->userdata('admin_logged_in')) {
-            redirect('admin/dashboard');
+    // Load the login page
+    public function index()
+    {
+        if ($this->session->get('admin_logged_in')) { // Correct way to retrieve session data in CI4
+            return redirect()->to('admin/dashboard');
         }
-        $this->load->view('admin/login');
+        return view('Admin/login');
     }
 
-    // Traitement de la soumission du formulaire de connexion
-    public function login() {
-        // Validation des champs
-        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-        $this->form_validation->set_rules('password', 'Password', 'required');
+    // Handle login form submission
+    public function login()
+    {
+        $validation = \Config\Services::validation();
 
-        if ($this->form_validation->run() == FALSE) {
-            // Validation échouée
-            $this->load->view('admin/login');
-        } else {
-            // Récupérer les informations du formulaire
-            $email = $this->input->post('email');
-            $password = $this->input->post('password');
+        // Validate input fields
+        $validation->setRules([
+            'email'    => 'required|valid_email',
+            'password' => 'required',
+        ]);
 
-            // Vérifier les informations d'identification
-            $user = $this->UserModel->verify_admin($email, $password);
+        if (!$validation->withRequest($this->request)->run()) {
+            // Validation failed
+            return view('admin/login', ['errors' => $validation->getErrors()]);
+        }
 
-            if ($user) {
-                // Vérifier si l'utilisateur est un admin
-                if ($user->role_name === 'admin') {
-                    // Définir les données de session
-                    $this->session->set_userdata([
-                        'admin_logged_in' => TRUE,
-                        'user_id' => $user->user_id,
-                        'username' => $user->username,
-                        'role_name' => $user->role_name,
-                    ]);
-                    redirect('admin/dashboard');
-                } else {
-                    // Utilisateur non autorisé
-                    $this->session->set_flashdata('error', 'Seuls les administrateurs peuvent se connecter.');
-                    redirect('admin/login');
-                }
+        // Get form data
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+
+        // Verify credentials using a UserModel
+        $userModel = new UserModel();
+        $compteModel = new CompteModel();
+        $roleModel = new RoleModel();
+        $user = $userModel->where('email', $email)->first();
+        $compte = $compteModel->where('id', $user['id'])->first();
+        $role_admin = $roleModel->where('id', $compte['role_id'])->first();
+        
+
+        if ($user && password_verify($password, $user['password'])) {
+            // Check if the user is an admin
+            if ($role_admin['role_name'] === 'admin') {
+                // Set session data
+                $this->session->set([
+                    'admin_logged_in' => true,
+                    'user_id'         => $user['id'],
+                    'name'        => $user['name'],
+                    'role_name'       => $role_admin['role_name'],
+                ]);
+                return redirect()->to('/');
             } else {
-                // Connexion échouée
-                $this->session->set_flashdata('error', 'Email ou mot de passe invalide.');
-                redirect('admin/login');
+                // Unauthorized user
+                $this->session->setFlashdata('error', 'Only administrators can log in.');
+                return redirect()->to('/admin');
             }
+        } else {
+            // Invalid credentials
+            $this->session->setFlashdata('error', 'Invalid email or password.');
+            return redirect()->to('/');
         }
     }
 
-    // Déconnexion
-    public function logout() {
-        $this->session->unset_userdata(['admin_logged_in', 'user_id', 'username', 'role_name']);
-        $this->session->sess_destroy();
-        redirect('admin/login');
+    // Logout
+    public function logout()
+    {
+        $this->session->remove(['admin_logged_in', 'user_id', 'name', 'role_name']);
+        $this->session->destroy(); // Destroy the session
+        return redirect()->to('/');
     }
 }
