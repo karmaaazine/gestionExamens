@@ -3,57 +3,88 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\CompteModel;
+use App\Models\RoleModel;
 use CodeIgniter\Controller;
 
-class LoginController extends Controller
+class LoginUserController extends Controller
 {
+    protected $session;
+
+    public function __construct()
+    {
+        $this->session = \Config\Services::session();
+    }
+
     public function index()
     {
         return view('login'); 
     }
 
+
+    // Gérer la soumission du formulaire de connexion
     public function login()
     {
         $validation = \Config\Services::validation();
-        
+
+        // Valider les champs du formulaire
         $validation->setRules([
-            'email' => 'required|valid_email',
-            'password' => 'required|min_length[6]'
+            'email'    => 'required|valid_email',
+            'password' => 'required',
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            return view('login', ['errors' => $validation->getErrors()]);
         }
 
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+
+        // Vérifier les informations 
         $userModel = new UserModel();
-        $user = $userModel
-            ->select('users.*, comptes.role_id') // Récupère les colonnes nécessaires
-            ->join('comptes', 'comptes.user_id = users.id') // Jointure entre `users` et `comptes`
-            ->where('users.email', $this->request->getPost('email'))
-            ->first();
+        $compteModel = new CompteModel();
+        $roleModel = new RoleModel();
+        
+        $user = $userModel->where('email', $email)->first();
+        if ($user) {
+            $compte = $compteModel->where('user_id', $user['id'])->first();
+            if ($compte) {
+                $role = $roleModel->where('id', $compte['role_id'])->first();
+                
+                //Verifier si les informations valides
+                if (password_verify($password, $user['password'])) {
+                    //Si user est trouve et pwd correct
+                    $this->session->set([
+                        'isLoggedIn' => true,
+                        'user_id'    => $user['id'],
+                        'name'       => $user['name'],
+                        'role_name'  => $role['role_name'], 
+                    ]);
 
-        // Vérifie les informations d'identification
-        if (!$user || !password_verify($this->request->getPost('password'), $user['password'])) {
-            return redirect()->back()->with('error', 'Email ou mot de passe incorrect.');
+                    if ($role['role_name'] === 'professeur') {
+                        return redirect()->to('/professeur/dashboard');
+                    } 
+                    elseif ($role['role_name'] === 'etudiant') {
+                        return redirect()->to('/etudiant/dashboard');
+                    } 
+                    else {
+                        return redirect()->to('/dashboard'); 
+                    }
+                } else {
+                    $this->session->setFlashdata('error', 'email ou mot de passe incorrect');
+                    return redirect()->to('/login'); 
+                }
+            }
         }
 
-        // Stocke les données utilisateur dans la session
-        session()->set('isLoggedIn', true);
-        session()->set('user', $user);
-
-        // Redirection selon le rôle (2 = Professeur, 3 = Étudiant)
-        if ($user['role_id'] == 2) {
-            return redirect()->to('http://localhost:8080/professeur/dashboard');
-        } elseif ($user['role_id'] == 3) {
-            return redirect()->to('http://localhost:8080/etudiant/dashboard');
-        } else {
-            return redirect()->to('http://localhost:8080/dashboard'); // Redirection par défaut
-        }
+        $this->session->setFlashdata('error', 'email ou mot de passe incorrect');
+        return redirect()->to('/login'); 
     }
 
     public function logout()
     {
-        session()->destroy();
-        return redirect()->to('/');
+        $this->session->remove(['isLoggedIn', 'user_id', 'name', 'role_name']);
+        $this->session->destroy(); 
+        return redirect()->to('/'); 
     }
 }
