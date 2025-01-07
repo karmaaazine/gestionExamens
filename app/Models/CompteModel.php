@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class CompteModel extends Model
 {
     // The name of the table associated with this model
-    protected $table = 'compte';
+    protected $table = 'comptes';
 
     // The primary key of the table
     protected $primaryKey = 'id';
