@@ -65,7 +65,7 @@ class AdminLoginController extends Controller
                     'name'        => $user['name'],
                     'role_name'       => $role_admin['role_name'],
                 ]);
-                return redirect()->to('/');
+                return redirect()->to('/admin/Dashbord');
             } else {
                 // Unauthorized user
                 $this->session->setFlashdata('error', 'Only administrators can log in.');
