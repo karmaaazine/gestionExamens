@@ -67,14 +67,47 @@ class AdminLoginController extends Controller
         return redirect()->to('/admin/gestion_prof');
     }
 
-    public function edit()
+    public function edit($prof)
     {
+        $profModel = new UserModel();
 
+        // Validate the input data (optional)
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'name' => 'required|min_length[3]',
+            'email' => 'required|valid_email',
+            'city' => 'required',
+            'tel' => 'required|numeric',
+            'password' => 'required'
+            
+        ]);
+
+        if (!$this->validate($validation->getRules())) {
+            return redirect()->back()->with('errors', $this->validator->getErrors());
+        }
+
+        // Get user input
+        $data = [
+            'name' => $this->request->getPost('name'),
+            'email' => $this->request->getPost('email'),
+            'city' => $this->request->getPost('city'),
+            'tel' => $this->request->getPost('tel'),
+            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT)
+        ];
+
+        // Update the database
+        if ($profModel->update($prof, $data)) {
+            return redirect()->to('/admin/gestion_prof')->with('message', 'professor updated successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Failed to update professor.');
+        }
     }
+
+    
 
     public function delete()
     {
 
     }
-
 }
+
