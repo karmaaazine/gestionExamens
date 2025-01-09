@@ -102,9 +102,9 @@
 </head>
 <body>
     <div class="bg-background min-h-screen">
-        <header class="bg-zinc-800 text-white p-4 flex justify-between items-center">
-            <?php include 'navbar.php'; ?>
-        </header>
+        <!-- <header class="bg-zinc-800 text-white p-4 flex justify-between items-center">
+            <?php //include 'navbar.php'; ?>
+        </header> -->
 
         <main class="p-6 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             <div class="bg-zinc-700 text-white p-6 rounded-lg flex flex-col items-center hover:bg-zinc-600">
@@ -135,7 +135,11 @@
             <div class="bg-yellow-500 text-black p-6 rounded-lg flex flex-col items-center hover:bg-yellow-400">
                 <!-- FontAwesome icon for Déconnexion -->
                 <i class="fas fa-sign-out-alt text-3xl"></i>
-                <span class="mt-2 text-lg">Déconnexion</span>
+                <a href="/logout_admin" class="mt-2 text-lg bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                    Déconnexion
+                </a>
+
+                <!-- <span class="mt-2 text-lg">Déconnexion</span> -->
             </div>
         </main>
     </div>

@@ -70,7 +70,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header">
-                    <img src="<?= base_url('public/images/logo.png'); ?>" alt="Logo" class="logo">
+                    <img src="<?= base_url('assets/images/logo.png'); ?>" alt="Logo" class="logo">
                     <h3>Admin</h3>
                     <p class="mb-0">Veuillez entrer vos identifiants</p>
                 </div>
