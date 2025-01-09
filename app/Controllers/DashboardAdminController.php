@@ -26,7 +26,7 @@ class DashboardAdminController extends Controller
             return redirect()->to('/login')->with('error', 'Accès refusé. Rôle non autorisé.');
         }
 
-        return view('admin/Dashboard'); 
+        return view('Admin/teacherview'); 
     }
     public function logout()
     {
