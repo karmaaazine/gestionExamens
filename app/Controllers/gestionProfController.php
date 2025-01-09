@@ -58,12 +58,12 @@ class AdminLoginController extends Controller
             'tel' => $tel,
             'password' => password_hash($password, PASSWORD_DEFAULT), // Hachage du mot de passe
         ]);
-        $role_prof = $roleModel->where('role_name', 'prodesseur')->first();
+        $role_prof = $roleModel->where('role_name', 'professeur')->first();
         $compteModel->save([
             'user_id' => $profModel['id'],
             'role_id' => $role_prof['id'],
         ]);
-        
+
         return redirect()->to('/admin/gestion_prof');
     }
 
@@ -72,9 +72,16 @@ class AdminLoginController extends Controller
 
     }
 
-    public function delete()
+    public function delete($prof)
     {
-
+        $profModel = new UserModel();
+        $profModel = $profModel->where('id', $prof->id)->first();
+        if($profModel){
+            $profModel->delete();
+            return redirect()->to('/admin/gestion_prof')->with('message', 'Professor deleted');
+        }else{
+            return redirect()->to('/admin/gestion_prof')->with('error', 'Failed to delete professor');
+        }
     }
 
 }
