@@ -17,6 +17,10 @@ class AdminLoginController extends Controller
         $this->session = \Config\Services::session();
     }
 
+    public function show(){
+        return view("Admin/teacherview");
+    }
+
     // Load the login page
     public function index()
     {
@@ -65,7 +69,7 @@ class AdminLoginController extends Controller
                     'name'        => $user['name'],
                     'role_name'       => $role_admin['role_name'],
                 ]);
-                return redirect()->to('/');
+                return redirect()->to('/admin/Dashbord');
             } else {
                 // Unauthorized user
                 $this->session->setFlashdata('error', 'Only administrators can log in.');
