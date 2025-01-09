@@ -82,7 +82,7 @@
                         </div>
                     <?php endif; ?>
                     <!-- Formulaire de connexion -->
-                    <form action="/login_process" method="POST">
+                    <form action="/log_process" method="POST">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" required>
@@ -95,9 +95,6 @@
                             <button type="submit" class="btn btn-primary">Se connecter</button>
                         </div>
                     </form>
-                </div>
-                <div class="card-footer text-center">
-                    <small>Pas encore inscrit ? <a href="<?= site_url('/register') ?>">Créer un compte ici</a></small>
                 </div>
             </div>
         </div>
