@@ -103,11 +103,16 @@ class AdminLoginController extends Controller
         }
     }
 
-    
-
-    public function delete()
+    public function delete($prof)
     {
-
+        $profModel = new UserModel();
+        $profModel = $profModel->where('id', $prof->id)->first();
+        if($profModel){
+            $profModel->delete();
+            return redirect()->to('/admin/gestion_prof')->with('message', 'Professor deleted');
+        }else{
+            return redirect()->to('/admin/gestion_prof')->with('error', 'Failed to delete professor');
+        }
     }
 }
 
