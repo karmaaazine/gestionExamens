@@ -58,12 +58,12 @@ class AdminLoginController extends Controller
             'tel' => $tel,
             'password' => password_hash($password, PASSWORD_DEFAULT), // Hachage du mot de passe
         ]);
-        $role_prof = $roleModel->where('role_name', 'prodesseur')->first();
+        $role_prof = $roleModel->where('role_name', 'professeur')->first();
         $compteModel->save([
             'user_id' => $profModel['id'],
             'role_id' => $role_prof['id'],
         ]);
-        
+
         return redirect()->to('/admin/gestion_prof');
     }
 
