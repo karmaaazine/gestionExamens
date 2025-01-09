@@ -12,3 +12,5 @@ $routes->get('/logout', 'LoginUserController::logout');
 
 $routes->get('/admin', 'adminLoginController::index');
 $routes->post('/login_process', 'adminLoginController::login');
+$routes->get('/logout_admin', 'adminLoginController::logout');
+
