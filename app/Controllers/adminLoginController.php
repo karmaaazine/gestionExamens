@@ -69,7 +69,7 @@ class AdminLoginController extends Controller
                     'name'        => $user['name'],
                     'role_name'       => $role_admin['role_name'],
                 ]);
-                return redirect()->to('/admin/Dashbord');
+                return redirect()->to('/admin/dashboard');
             } else {
                 // Unauthorized user
                 $this->session->setFlashdata('error', 'Only administrators can log in.');
@@ -78,15 +78,24 @@ class AdminLoginController extends Controller
         } else {
             // Invalid credentials
             $this->session->setFlashdata('error', 'Invalid email or password.');
-            return redirect()->to('/');
+            return redirect()->to('/admin');
         }
     }
+
+    public function dashboard()
+{
+    if (!$this->session->get('admin_logged_in')) {
+        return redirect()->to('/admin');
+    }
+
+    return view('admin/dashboard'); // Load the dashboard view
+}
 
     // Logout
     public function logout()
     {
         $this->session->remove(['admin_logged_in', 'user_id', 'name', 'role_name']);
         $this->session->destroy(); // Destroy the session
-        return redirect()->to('/');
+        return redirect()->to('/admin');
     }
 }
