@@ -46,7 +46,7 @@
         <div class="container-fluid">
             <!-- Logo -->
             <a class="navbar-brand" href="#">
-                <img src="path_to_logo/logo.png" alt="Logo">
+                <img src="<?= base_url('assets/images/logo.png'); ?>" alt="Logo">
                 Admin Dashboard
             </a>
             <!-- Toggler button for mobile -->

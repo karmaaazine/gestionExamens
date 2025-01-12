@@ -102,15 +102,15 @@
 </head>
 <body>
     <div class="bg-background min-h-screen">
-        <!-- <header class="bg-zinc-800 text-white p-4 flex justify-between items-center">
-            <?php //include 'navbar.php'; ?>
-        </header> -->
+        <header class="bg-zinc-800 text-white p-4 flex justify-between items-center">
+            <?php include 'navbar.php'; ?>
+        </header>
 
         <main class="p-6 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             <div class="bg-zinc-700 text-white p-6 rounded-lg flex flex-col items-center hover:bg-zinc-600">
                 <!-- FontAwesome icon for Professeurs -->
                 <i class="fas fa-chalkboard-teacher text-3xl"></i>
-                <span class="mt-2 text-lg">Professeurs</span>
+                <span class="mt-2 text-lg"><a href = '/admin/prof_view'>Professeurs</a></span>
             </div>
             <div class="bg-zinc-700 text-white p-6 rounded-lg flex flex-col items-center hover:bg-zinc-600">
                 <!-- FontAwesome icon for Étudiants -->
