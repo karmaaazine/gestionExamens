@@ -109,41 +109,60 @@ class gestionProfController extends Controller
     }
 
 
-    public function edit($prof)
+    public function edit($id)
     {
         $profModel = new UserModel();
-
-        // Validate the input data (optional)
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required|min_length[3]',
-            'email' => 'required|valid_email',
-            'city' => 'required',
-            'tel' => 'required|numeric',
-            'password' => 'required'
-            
-        ]);
-
-        if (!$this->validate($validation->getRules())) {
-            return redirect()->back()->with('errors', $this->validator->getErrors());
+    
+        // Fetch the teacher's existing data
+        $teacher = $profModel->find($id);
+    
+        // Check if the teacher exists
+        if (!$teacher) {
+            return redirect()->to('/admin/gestion_prof')->with('error', 'Teacher not found.');
         }
-
-        // Get user input
-        $data = [
-            'name' => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email'),
-            'city' => $this->request->getPost('city'),
-            'tel' => $this->request->getPost('tel'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT)
-        ];
-
-        // Update the database
-        if ($profModel->update($prof, $data)) {
-            return redirect()->to('/admin/gestion_prof')->with('message', 'professor updated successfully!');
-        } else {
-            return redirect()->back()->with('error', 'Failed to update professor.');
+    
+        // Check if the request is a POST (form submission)
+        if ($this->request->getMethod() === 'post') {
+            // Validate the input data
+            $validation = \Config\Services::validation();
+            $validation->setRules([
+                'name' => 'required|min_length[3]',
+                'email' => 'required|valid_email',
+                'city' => 'required',
+                'tel' => 'required|numeric',
+                // Password is optional; only validate if provided
+                'password' => 'permit_empty|min_length[6]'
+            ]);
+    
+            if (!$validation->withRequest($this->request)->run()) {
+                return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            }
+    
+            // Get user input
+            $data = [
+                'name' => $this->request->getPost('name'),
+                'email' => $this->request->getPost('email'),
+                'city' => $this->request->getPost('city'),
+                'tel' => $this->request->getPost('tel')
+            ];
+    
+            // Update password only if provided
+            if ($password = $this->request->getPost('password')) {
+                $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+            }
+    
+            // Update the database
+            if ($profModel->update($id, $data)) {
+                return redirect()->to('/admin/gestion_prof')->with('message', 'Professor updated successfully!');
+            } else {
+                return redirect()->back()->with('error', 'Failed to update professor.');
+            }
         }
+    
+        // Load the edit view with the teacher's data
+        return view('Admin/teacherEdit', ['teacher' => $teacher]);
     }
+    
 
     public function delete($id)
     {
