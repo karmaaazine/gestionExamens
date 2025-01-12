@@ -9,21 +9,21 @@
 </head>
 
 <body>
-<?php include('navbar.php'); ?>
+    <?php include('navbar.php'); ?>
 
     <div class="container mt-5">
         <div class="d-flex justify-content-between mb-3">
             <h4>Liste des Professeurs</h4>
-            <a href="<?= site_url('admin/teachers/create') ?>" class="btn btn-primary">Ajouter un Professeur</a>
+            <a href="<?= site_url('admin/teachers/add') ?>" class="btn btn-primary">Ajouter un Professeur</a>
         </div>
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Prénom</th>
                     <th>Nom</th>
-                    <th>Matiere</th>
-                    <th>Classe</th>
+                    <th>Email</th>
+                    <th>Ville</th>
+                    <th>Téléphone</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -31,12 +31,15 @@
                 <?php if (!empty($teachers)): ?>
                     <?php foreach ($teachers as $teacher): ?>
                         <tr>
-                            <td><?= $teacher['id'] ?></td>
-                            <td><?= $teacher['first_name'] ?></td>
-                            <td><?= $teacher['last_name'] ?></td>
+                            <td><?= esc($teacher['id']) ?></td>
+                            <td><?= esc($teacher['name']) ?></td>
+                            <td><?= esc($teacher['email']) ?></td>
+                            <td><?= esc($teacher['city']) ?></td>
+                            <td><?= esc($teacher['tel']) ?></td>
                             <td>
                                 <a href="<?= site_url('admin/teachers/edit/' . $teacher['id']) ?>" class="btn btn-warning btn-sm">Modifier</a>
-                                <form action="<?= site_url('admin/teachers/delete/' . $teacher['id']) ?>" method="POST" style="display:inline-block;">
+                                
+                                <form action="<?= site_url('/admin/teachers/delete/' . $teacher['id']) ?>" method="POST" style="display:inline-block;">
                                     <input type="hidden" name="_method" value="DELETE">
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr ?')">Supprimer</button>
                                 </form>
@@ -45,7 +48,7 @@
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="text-center">Aucun professeur trouvé</td>
+                        <td colspan="6" class="text-center">Aucun professeur trouvé</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
