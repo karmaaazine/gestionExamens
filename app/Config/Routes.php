@@ -15,3 +15,8 @@ $routes->post('/login_process', 'adminLoginController::login');
 $routes->get('/admin/dashboard', 'adminLoginController::dashboard');
 $routes->get('/logout_admin', 'adminLoginController::logout');
 
+
+$routes->get('/admin/prof_view', 'gestionProfController::index');
+$routes->delete('/admin/teachers/delete/(:num)', 'gestionProfController::delete/$1');
+
+

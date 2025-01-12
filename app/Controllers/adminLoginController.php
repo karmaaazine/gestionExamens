@@ -17,6 +17,10 @@ class AdminLoginController extends Controller
         $this->session = \Config\Services::session();
     }
 
+    public function show(){
+        return view("Admin/teacherview");
+    }
+
     // Load the login page
     public function index()
     {

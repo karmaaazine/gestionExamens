@@ -202,4 +202,7 @@ class App extends BaseConfig
 
     public $env = 'development'; // Changez cela à 'development'
 
+    public $logThreshold = 4; // Set to 4 to log all message types (error, debug, info, etc.)
+
+
 }
