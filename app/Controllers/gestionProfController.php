@@ -118,11 +118,10 @@ class gestionProfController extends Controller
     
         // Check if the teacher exists
         if (!$teacher) {
-            return redirect()->to('/admin/gestion_prof')->with('error', 'Teacher not found.');
+            return redirect()->to('/admin/prof_view')->with('error', 'Teacher not found.');
         }
-    
         // Check if the request is a POST (form submission)
-        if ($this->request->getMethod() === 'post') {
+        if ($this->request->getMethod() === 'POST') {
             // Validate the input data
             $validation = \Config\Services::validation();
             $validation->setRules([
@@ -145,6 +144,7 @@ class gestionProfController extends Controller
                 'city' => $this->request->getPost('city'),
                 'tel' => $this->request->getPost('tel')
             ];
+
     
             // Update password only if provided
             if ($password = $this->request->getPost('password')) {
@@ -153,8 +153,9 @@ class gestionProfController extends Controller
     
             // Update the database
             if ($profModel->update($id, $data)) {
-                return redirect()->to('/admin/gestion_prof')->with('message', 'Professor updated successfully!');
+                return redirect()->to('/admin/prof_view')->with('message', 'Professor updated successfully!');
             } else {
+                dd($profModel->errors());
                 return redirect()->back()->with('error', 'Failed to update professor.');
             }
         }
