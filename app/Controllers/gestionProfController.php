@@ -64,7 +64,7 @@ class gestionProfController extends Controller
             $validation = \Config\Services::validation();
             $validation->setRules([
                 'name' => 'required|min_length[3]',
-                'email' => 'required|valid_email',
+                'email' => "required|valid_email|is_unique[users.email]",
                 'city' => 'required',
                 'tel' => 'required|numeric',
                 // Password is optional; only validate if provided
@@ -136,7 +136,7 @@ class gestionProfController extends Controller
             $validation = \Config\Services::validation();
             $validation->setRules([
                 'name' => 'required|min_length[3]',
-                'email' => 'required|valid_email',
+                'email' => "required|valid_email|is_unique[users.email,id,$id]",
                 'city' => 'required',
                 'tel' => 'required|numeric',
                 // Password is optional; only validate if provided
