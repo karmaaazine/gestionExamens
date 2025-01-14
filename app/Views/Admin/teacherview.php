@@ -14,7 +14,7 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between mb-3">
             <h4>Liste des Professeurs</h4>
-            <a href="<?= site_url('admin/teachers/add') ?>" class="btn btn-primary">Ajouter un Professeur</a>
+            <a href="<?= site_url('/admin/gestion_prof/add/') ?>" class="btn btn-primary">Ajouter un Professeur</a>
         </div>
         <table class="table table-bordered">
             <thead>
