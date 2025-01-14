@@ -17,9 +17,8 @@ class CompteModel extends Model
 
     // Validation rules
     protected $validationRules = [
-        'name'     => 'required|min_length[3]|max_length[255]',
-        'email'    => 'required|valid_email|is_unique[users.email]',
-        'password' => 'required|min_length[8]',
+        'user_id'     => 'required|integer',
+        'role_id'    => 'required|integer',
     ];
 
     // Fields that should be validated during insert or update operations
