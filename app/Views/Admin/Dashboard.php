@@ -125,7 +125,7 @@
             <div class="bg-zinc-700 text-white p-6 rounded-lg flex flex-col items-center hover:bg-zinc-600">
                 <!-- FontAwesome icon for Sections -->
                 <i class="fas fa-layer-group text-3xl"></i>
-                <span class="mt-2 text-lg">Sections</span>
+                <span class="mt-2 text-lg">Modules</span>
             </div>
             <div class="bg-blue-600 text-white p-6 rounded-lg flex flex-col items-center hover:bg-blue-500">
                 <!-- FontAwesome icon for Paramètres -->
