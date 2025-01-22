@@ -63,7 +63,7 @@
                         <a class="nav-link" href="professeurs.php">Professeurs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="etudiants.php">Étudiants</a>
+                        <a class="nav-link" href="StudentView.php">Étudiants</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="classes.php">Classes</a>
