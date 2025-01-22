@@ -25,5 +25,6 @@ $routes->post('/admin/gestion_prof/add/', 'gestionProfController::add');
 $routes->get('/admin/gestion_prof/edit/(:num)', 'gestionProfController::edit/$1');
 $routes->post('/admin/gestion_prof/edit/(:num)', 'gestionProfController::edit/$1');
 
+$routes->get('/admin/student_view', 'StudentController::index');
 
 

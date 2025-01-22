@@ -115,7 +115,7 @@
             <div class="bg-zinc-700 text-white p-6 rounded-lg flex flex-col items-center hover:bg-zinc-600">
                 <!-- FontAwesome icon for Étudiants -->
                 <i class="fas fa-user-graduate text-3xl"></i>
-                <span class="mt-2 text-lg">Étudiants</span>
+                <span class="mt-2 text-lg"><a href = '/admin/student_view'>Étudiants</a></span>
             </div>
             <div class="bg-zinc-700 text-white p-6 rounded-lg flex flex-col items-center hover:bg-zinc-600">
                 <!-- FontAwesome icon for Classes -->
