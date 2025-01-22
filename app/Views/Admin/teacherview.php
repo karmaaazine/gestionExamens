@@ -14,7 +14,7 @@
     <div class="container mt-5">
         <div class="d-flex justify-content-between mb-3">
             <h4>Liste des Professeurs</h4>
-            <a href="<?= site_url('admin/teachers/add') ?>" class="btn btn-primary">Ajouter un Professeur</a>
+            <a href="<?= site_url('/admin/gestion_prof/add/') ?>" class="btn btn-primary">Ajouter un Professeur</a>
         </div>
         <table class="table table-bordered">
             <thead>
@@ -28,7 +28,7 @@
                 </tr>
             </thead>
             <tbody>
-                <?php if (!empty($teachers)): ?>
+            <?php if (!empty($teachers)): ?>
                     <?php foreach ($teachers as $teacher): ?>
                         <tr>
                             <td><?= esc($teacher['id']) ?></td>
@@ -37,7 +37,7 @@
                             <td><?= esc($teacher['city']) ?></td>
                             <td><?= esc($teacher['tel']) ?></td>
                             <td>
-                                <a href="<?= site_url('admin/teachers/edit/' . $teacher['id']) ?>" class="btn btn-warning btn-sm">Modifier</a>
+                                <a href="<?= base_url('admin/gestion_prof/edit/' . $teacher['id']) ?>" class="btn btn-warning btn-sm">Modifier</a>
                                 
                                 <form action="<?= site_url('/admin/teachers/delete/' . $teacher['id']) ?>" method="POST" style="display:inline-block;">
                                     <input type="hidden" name="_method" value="DELETE">

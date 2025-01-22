@@ -19,4 +19,11 @@ $routes->get('/logout_admin', 'adminLoginController::logout');
 $routes->get('/admin/prof_view', 'gestionProfController::index');
 $routes->delete('/admin/teachers/delete/(:num)', 'gestionProfController::delete/$1');
 
+$routes->get('/admin/gestion_prof/add/', 'gestionProfController::add');
+$routes->post('/admin/gestion_prof/add/', 'gestionProfController::add');
+
+$routes->get('/admin/gestion_prof/edit/(:num)', 'gestionProfController::edit/$1');
+$routes->post('/admin/gestion_prof/edit/(:num)', 'gestionProfController::edit/$1');
+
+
 

@@ -52,98 +52,128 @@ class gestionProfController extends Controller
 
     public function add()
     {
-        log_message('debug', 'Delete method called for ID: ' . $id);
-        $validation = \Config\Services::validation();
-        
-        // Validate the form input
-        $validation->setRules([
-            'name' => 'required|min_length[3]|max_length[100]',
-            'email' => 'required|valid_email|is_unique[users.email]',
-            'city' => 'required|min_length[3]|max_length[100]',
-            'tel' => 'required|numeric|min_length[10]|max_length[15]',
-            'password' => 'required|min_length[6]'
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
-        }
-
-        // Get the input data
-        $name = $this->request->getPost('name');
-        $email = $this->request->getPost('email');
-        $city = $this->request->getPost('city');
-        $tel = $this->request->getPost('tel');
-        $password = $this->request->getPost('password');
-
-        // Initialize models
         $profModel = new UserModel();
         $compteModel = new CompteModel();
         $roleModel = new RoleModel();
 
-        // Find the "professeur" role
-        $role_prof = $roleModel->where('role_name', 'professeur')->first();
-        if (!$role_prof) {
-            return redirect()->to('/admin/teachers/add')->with('error', 'Role "professeur" not found.');
+        $roleProfId = $roleModel->where('role_name','professeur')->first();
+    
+        // Check if the request is a POST (form submission)
+        if ($this->request->getMethod() === 'POST') {
+            // Validate the input data
+            $validation = \Config\Services::validation();
+            $validation->setRules([
+                'name' => 'required|min_length[3]',
+                'email' => "required|valid_email|is_unique[users.email]",
+                'city' => 'required',
+                'tel' => 'required|numeric',
+                // Password is optional; only validate if provided
+                'password' => 'required|min_length[6]'
+            ]);
+    
+            if (!$validation->withRequest($this->request)->run()) {
+                return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            }
+    
+            // Get user input
+            $data = [
+                'name' => $this->request->getPost('name'),
+                'email' => $this->request->getPost('email'),
+                'city' => $this->request->getPost('city'),
+                'tel' => $this->request->getPost('tel'),
+            ];
+
+            // Update password only if provided
+            if ($password = $this->request->getPost('password')) {
+                $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+            }
+    
+            // Update the database
+            if ($profModel->save($data)) {
+                // print_r( $profModel->id);
+                // print_r($roleProfId);
+                $professorId = $profModel->insertID();
+                 
+    
+                // Prepare compte data
+                $compteData = [
+                    'user_id' => $professorId,
+                    'role_id' => $roleProfId['id']
+                ];
+                
+                // Save compte
+                if (!$compteModel->save($compteData)) {
+                    throw new \Exception('Failed to save compte: ' . json_encode($compteModel->errors()));
+                } 
+
+               
+                return redirect()->to('/admin/prof_view')->with('message', 'Professor added successfully!');
+            } else {
+                dd($profModel->errors());
+                return redirect()->back()->with('error', 'Failed to update professor.');
+            }
         }
-
-        // Save the professor data
-        $profModel->save([
-            'name' => $name,
-            'email' => $email,
-            'city' => $city,
-            'tel' => $tel,
-            'password' => password_hash($password, PASSWORD_DEFAULT), // Hash the password
-        ]);
-
-        // Get the newly created professor's ID
-        $newProfId = $profModel->insertID();
-
-        // Save the professor's role to the "compte" table
-        $compteModel->save([
-            'user_id' => $newProfId,
-            'role_id' => $role_prof['id'],
-        ]);
-
-        // Redirect back to the professor list with a success message
-        return redirect()->to('/admin/gestion_prof')->with('success', 'Professor added successfully!');
+    
+        // Load the edit view with the teacher's data
+        return view('Admin/teacherAdd');
     }
 
 
-    public function edit($prof)
+    public function edit($id)
     {
         $profModel = new UserModel();
-
-        // Validate the input data (optional)
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required|min_length[3]',
-            'email' => 'required|valid_email',
-            'city' => 'required',
-            'tel' => 'required|numeric',
-            'password' => 'required'
-            
-        ]);
-
-        if (!$this->validate($validation->getRules())) {
-            return redirect()->back()->with('errors', $this->validator->getErrors());
+    
+        // Fetch the teacher's existing data
+        $teacher = $profModel->find($id);
+    
+        // Check if the teacher exists
+        if (!$teacher) {
+            return redirect()->to('/admin/prof_view')->with('error', 'Teacher not found.');
         }
+        // Check if the request is a POST (form submission)
+        if ($this->request->getMethod() === 'POST') {
+            // Validate the input data
+            $validation = \Config\Services::validation();
+            $validation->setRules([
+                'name' => 'required|min_length[3]',
+                'email' => "required|valid_email|is_unique[users.email,id,$id]",
+                'city' => 'required',
+                'tel' => 'required|numeric',
+                // Password is optional; only validate if provided
+                'password' => 'permit_empty|min_length[6]'
+            ]);
+    
+            if (!$validation->withRequest($this->request)->run()) {
+                return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            }
+    
+            // Get user input
+            $data = [
+                'name' => $this->request->getPost('name'),
+                'email' => $this->request->getPost('email'),
+                'city' => $this->request->getPost('city'),
+                'tel' => $this->request->getPost('tel')
+            ];
 
-        // Get user input
-        $data = [
-            'name' => $this->request->getPost('name'),
-            'email' => $this->request->getPost('email'),
-            'city' => $this->request->getPost('city'),
-            'tel' => $this->request->getPost('tel'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT)
-        ];
-
-        // Update the database
-        if ($profModel->update($prof, $data)) {
-            return redirect()->to('/admin/gestion_prof')->with('message', 'professor updated successfully!');
-        } else {
-            return redirect()->back()->with('error', 'Failed to update professor.');
+    
+            // Update password only if provided
+            if ($password = $this->request->getPost('password')) {
+                $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+            }
+    
+            // Update the database
+            if ($profModel->update($id, $data)) {
+                return redirect()->to('/admin/prof_view')->with('message', 'Professor updated successfully!');
+            } else {
+                dd($profModel->errors());
+                return redirect()->back()->with('error', 'Failed to update professor.');
+            }
         }
+    
+        // Load the edit view with the teacher's data
+        return view('Admin/teacherEdit', ['teacher' => $teacher]);
     }
+    
 
     public function delete($id)
     {

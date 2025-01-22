@@ -57,23 +57,23 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">Dashboard</a>
+                        <a class="nav-link" href="<?= base_url('/admin/dashboard'); ?>">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="professeurs.php">Professeurs</a>
+                        <a class="nav-link" href="<?= base_url('/admin/dashboard'); ?>">Professeurs</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="StudentView.php">Étudiants</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="classes.php">Classes</a>
+                        <a class="nav-link" href="<?= base_url(''); ?>">Classes</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="sections.php">Sections</a>
+                        <a class="nav-link" href="<?= base_url(''); ?>">Sections</a>
                     </li>
                 </ul>
                 <!-- Logout Button -->
-                <form action="logout.php" method="POST" class="d-flex">
+                <form action="<?= base_url('/logout_admin'); ?>" method="POST" class="d-flex">
                     <button type="submit" class="btn logout-btn">Déconnecter</button>
                 </form>
             </div>
