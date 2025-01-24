@@ -21,9 +21,10 @@
                     <th>ID</th>
                     <th>Nom&Prenom</th>
                     <th>Email</th>
-                    <th>Classe</th>
                     <th>Ville</th>
                     <th>Téléphone</th>
+                    <th>Class</th>
+                    <th>Year</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,14 +33,16 @@
                         <tr>
                             <td><?= esc($student['id']) ?></td>
                             <td><?= esc($student['name']) ?></td>
-                            <td><?= esc($student['grade']) ?></td>
+
                             <td><?= esc($student['email']) ?></td>
                             <td><?= esc($student['city']) ?></td>
                             <td><?= esc($student['tel']) ?></td>
+                            <td><?= esc($student['class']['name']) ?></td>
+                            <td><?= esc($student['year']['year']) ?></td>
                             <td>
                                 <a href="<?= site_url('admin/students/edit/' . $student['id']) ?>" class="btn btn-warning btn-sm">Modifier</a>
                                 
-                                <form action="<?= site_url('/admin/students/delete/' . $student['id']) ?>" method="POST" style="display:inline-block;">
+                                <form action="<?= site_url('/admin/student_view/delete/' . $student['id']) ?>" method="POST" style="display:inline-block;">
                                     <input type="hidden" name="_method" value="DELETE">
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr ?')">Supprimer</button>
                                 </form>
