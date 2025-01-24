@@ -34,7 +34,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="<?= base_url('/admin/gestion_student/add') ?>" method="post">
+                <form action="<?= base_url('/admin/student/add') ?>" method="post">
                     <?= csrf_field() ?>
 
                     <div class="form-group">
