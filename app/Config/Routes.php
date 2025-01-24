@@ -27,4 +27,10 @@ $routes->post('/admin/gestion_prof/edit/(:num)', 'gestionProfController::edit/$1
 
 $routes->get('/admin/student_view', 'StudentController::index');
 
+$routes->get('/admin/student/add/', 'StudentController::add');
+$routes->post('/admin/student/add/', 'StudentController::add');
+
+$routes->get('/admin/student/edit/(:num)', 'StudentController::edit/$1');
+$routes->post('/admin/student/edit/(:num)', 'StudentController::edit/$1');
+
 
