@@ -28,10 +28,9 @@ $routes->post('/admin/gestion_prof/edit/(:num)', 'gestionProfController::edit/$1
 $routes->get('/admin/student_view', 'gestionEtudiantController::index');
 $routes->delete('/admin/student_view/delete/(:num)', 'gestionEtudiantController::delete/$1');
 
-$routes->get('/admin/student/add/', 'StudentController::add');
-$routes->post('/admin/student/add/', 'StudentController::add');
+$routes->get('/admin/student/add/', 'gestionEtudiantController::add');
+$routes->post('/admin/student/add/', 'gestionEtudiantController::add');
 
-$routes->get('/admin/student/edit/(:num)', 'StudentController::edit/$1');
-$routes->post('/admin/student/edit/(:num)', 'StudentController::edit/$1');
-
+$routes->get('/admin/student/edit/(:num)', 'gestionEtudiantController::edit/$1');
+$routes->post('/admin/student/edit/(:num)', 'gestionEtudiantController::edit/$1');
 

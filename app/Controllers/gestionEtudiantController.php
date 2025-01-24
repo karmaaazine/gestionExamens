@@ -84,127 +84,127 @@ class gestionEtudiantController extends Controller
 
     public function add()
     {
-        $profModel = new UserModel();
-        $compteModel = new CompteModel();
+        // Charger les modèles nécessaires
+        $userModel = new UserModel();
         $roleModel = new RoleModel();
+        $studentClassModel = new StudentClassModel();
+        $classesModel = new ClassesModel();
 
-        $roleProfId = $roleModel->where('role_name','professeur')->first();
-    
-        // Check if the request is a POST (form submission)
-        if ($this->request->getMethod() === 'POST') {
-            // Validate the input data
+        // Récupérer le rôle étudiant
+        $roleStudent = $roleModel->where('role_name', 'etudiant')->first();
+        if (!$roleStudent) {
+            return redirect()->to('/admin')->with('error', 'Role "étudiant" non trouvé.');
+        }
+
+        if ($this->request->getMethod() === 'post') {
+            // Valider les données envoyées
             $validation = \Config\Services::validation();
             $validation->setRules([
                 'name' => 'required|min_length[3]',
-                'email' => "required|valid_email|is_unique[users.email]",
+                'email' => 'required|valid_email|is_unique[users.email]',
                 'city' => 'required',
                 'tel' => 'required|numeric',
-                // Password is optional; only validate if provided
-                'password' => 'required|min_length[6]'
+                'grade' => 'required|numeric', // Le grade doit être une ID de classe, pas du texte
             ]);
-    
+
             if (!$validation->withRequest($this->request)->run()) {
                 return redirect()->back()->withInput()->with('errors', $validation->getErrors());
             }
-    
-            // Get user input
-            $data = [
+
+            // Préparer les données de l'étudiant
+            $studentData = [
+                'name' => $this->request->getPost('name'),
+                'email' => $this->request->getPost('email'),
+                'password' => password_hash('defaultpassword', PASSWORD_BCRYPT), // Mot de passe par défaut
+                'city' => $this->request->getPost('city'),
+                'tel' => $this->request->getPost('tel'),
+            ];
+
+            // Sauvegarder l'étudiant
+            if ($userModel->save($studentData)) {
+                $studentId = $userModel->getInsertID();
+
+                // Associer l'étudiant à la classe
+                $studentClassData = [
+                    'user_id' => $studentId,
+                    'role_id' => $roleStudent['id'],
+                    'class_id' => $this->request->getPost('grade'), // ID de la classe
+                    'year_id' => 1, // Année par défaut, ajustez selon votre logique
+                ];
+
+                if ($studentClassModel->save($studentClassData)) {
+                    return redirect()->to('/admin/student_view')->with('message', 'Étudiant ajouté avec succès !');
+                }
+            }
+
+            return redirect()->back()->with('error', 'Échec de l\'ajout de l\'étudiant.');
+        }
+
+        // Charger la liste des classes disponibles pour le formulaire
+        $classes = $classesModel->findAll();
+
+        return view('Admin/AddStudentView', ['classes' => $classes]);
+    }
+
+
+    // Edit Student Method
+    public function edit($id)
+    {
+        $userModel = new UserModel();
+        $studentClassModel = new StudentClassModel();
+        $classesModel = new ClassesModel();
+
+        // Récupérer les données de l'étudiant
+        $student = $userModel->find($id);
+        if (!$student) {
+            return redirect()->to('/admin/student_view')->with('error', 'Étudiant non trouvé.');
+        }
+
+        if ($this->request->getMethod() === 'post') {
+            // Valider les données envoyées
+            $validation = \Config\Services::validation();
+            $validation->setRules([
+                'name' => 'required|min_length[3]',
+                'email' => 'required|valid_email|is_unique[users.email,id,' . $id . ']',
+                'city' => 'required',
+                'tel' => 'required|numeric',
+                'grade' => 'required|numeric', // Le grade doit être une ID de classe
+            ]);
+
+            if (!$validation->withRequest($this->request)->run()) {
+                return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            }
+
+            // Préparer les données mises à jour de l'étudiant
+            $studentData = [
                 'name' => $this->request->getPost('name'),
                 'email' => $this->request->getPost('email'),
                 'city' => $this->request->getPost('city'),
                 'tel' => $this->request->getPost('tel'),
             ];
 
-            // Update password only if provided
-            if ($password = $this->request->getPost('password')) {
-                $data['password'] = password_hash($password, PASSWORD_DEFAULT);
-            }
-    
-            // Update the database
-            if ($profModel->save($data)) {
-                // print_r( $profModel->id);
-                // print_r($roleProfId);
-                $professorId = $profModel->insertID();
-                 
-    
-                // Prepare compte data
-                $compteData = [
-                    'user_id' => $professorId,
-                    'role_id' => $roleProfId['id']
+            // Mettre à jour les données de l'étudiant
+            if ($userModel->update($id, $studentData)) {
+                // Mettre à jour les données de la classe
+                $studentClassData = [
+                    'class_id' => $this->request->getPost('grade'),
+                    'year_id' => 1, // Année par défaut
                 ];
-                
-                // Save compte
-                if (!$compteModel->save($compteData)) {
-                    throw new \Exception('Failed to save compte: ' . json_encode($compteModel->errors()));
-                } 
 
-               
-                return redirect()->to('/admin/prof_view')->with('message', 'Professor added successfully!');
-            } else {
-                dd($profModel->errors());
-                return redirect()->back()->with('error', 'Failed to update professor.');
+                $studentClassModel->where('user_id', $id)->set($studentClassData)->update();
+
+                return redirect()->to('/admin/student_view')->with('message', 'Étudiant mis à jour avec succès !');
             }
+
+            return redirect()->back()->with('error', 'Échec de la mise à jour de l\'étudiant.');
         }
-    
-        // Load the edit view with the teacher's data
-        return view('Admin/teacherAdd');
+
+        // Charger la liste des classes disponibles pour le formulaire
+        $classes = $classesModel->findAll();
+
+        return view('Admin/EditStudentView', ['student' => $student, 'classes' => $classes]);
     }
 
-
-    public function edit($id)
-    {
-        $profModel = new UserModel();
-    
-        // Fetch the teacher's existing data
-        $teacher = $profModel->find($id);
-    
-        // Check if the teacher exists
-        if (!$teacher) {
-            return redirect()->to('/admin/prof_view')->with('error', 'Teacher not found.');
-        }
-        // Check if the request is a POST (form submission)
-        if ($this->request->getMethod() === 'POST') {
-            // Validate the input data
-            $validation = \Config\Services::validation();
-            $validation->setRules([
-                'name' => 'required|min_length[3]',
-                'email' => "required|valid_email|is_unique[users.email,id,$id]",
-                'city' => 'required',
-                'tel' => 'required|numeric',
-                // Password is optional; only validate if provided
-                'password' => 'permit_empty|min_length[6]'
-            ]);
-    
-            if (!$validation->withRequest($this->request)->run()) {
-                return redirect()->back()->withInput()->with('errors', $validation->getErrors());
-            }
-    
-            // Get user input
-            $data = [
-                'name' => $this->request->getPost('name'),
-                'email' => $this->request->getPost('email'),
-                'city' => $this->request->getPost('city'),
-                'tel' => $this->request->getPost('tel')
-            ];
-
-    
-            // Update password only if provided
-            if ($password = $this->request->getPost('password')) {
-                $data['password'] = password_hash($password, PASSWORD_DEFAULT);
-            }
-    
-            // Update the database
-            if ($profModel->update($id, $data)) {
-                return redirect()->to('/admin/prof_view')->with('message', 'Professor updated successfully!');
-            } else {
-                dd($profModel->errors());
-                return redirect()->back()->with('error', 'Failed to update professor.');
-            }
-        }
-    
-        // Load the edit view with the teacher's data
-        return view('Admin/teacherEdit', ['teacher' => $teacher]);
-    }
     
 
     public function delete($id)
@@ -228,8 +228,6 @@ class gestionEtudiantController extends Controller
 
         return redirect()->to('/admin/student_view')->with('error', 'Échec de la suppression de l\'étudiant.');
     }
-
-
 
 }
 
