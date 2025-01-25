@@ -1,10 +1,3 @@
-Pour intégrer la fonctionnalité d'édition et de suppression dynamique dans le code que vous avez fourni, nous allons combiner les deux exemples. Nous allons permettre la modification des noms de classe directement dans le tableau et supprimer les lignes correspondantes lorsque l'utilisateur clique sur le bouton "Supprimer".
-
-Voici le code complet pour `ClasseView.php`, qui inclut les fonctionnalités d'édition et de suppression :
-
-### Code Complet pour `ClasseView.php`
-
-```php
 <!DOCTYPE html>
 <html lang="fr">
 

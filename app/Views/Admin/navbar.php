@@ -66,7 +66,7 @@
                         <a class="nav-link" href="StudentView.php">Étudiants</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url(''); ?>">Classes</a>
+                        <a class="nav-link" href="<?= base_url('/admin/classes_view'); ?>">Classes</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= base_url(''); ?>">Sections</a>
