@@ -34,3 +34,18 @@ $routes->post('/admin/student/add/', 'gestionEtudiantController::add');
 $routes->get('/admin/student/edit/(:num)', 'gestionEtudiantController::edit/$1');
 $routes->post('/admin/student/edit/(:num)', 'gestionEtudiantController::edit/$1');
 
+//$routes->get('/admin/classes_view', 'gestionClassesController::index');
+
+//$routes->match(['get', 'post'], '/admin/classes/edit/(:num)', 'gestionClassesController::edit/$1'); // Route to edit a class by ID
+/*$routes->get('/admin/classes_view', 'gestionClassesController::index');
+$routes->get('/admin/classes/edit/(:num)', 'gestionClassesController::edit/$1');
+$routes->post('/admin/classes/edit/(:num)', 'gestionClassesController::edit/$1');
+$routes->get('/admin/classes/delete/(:num)', 'gestionClassesController::delete/$1');
+$routes->post('/admin/classes/add/', 'gestionClassesController::add');*/
+$routes->get('/admin/classes_view', 'gestionClassesController::index');
+$routes->get('/admin/classes/edit/(:num)', 'gestionClassesController::edit/$1');
+$routes->post('/admin/classes/edit/(:num)', 'gestionClassesController::edit/$1');
+$routes->get('/admin/classes/delete/(:num)', 'gestionClassesController::delete/$1');
+$routes->post('/admin/classes/add', 'gestionClassesController::add');
+// ... other routes ...
+
